@@ -825,6 +825,14 @@ jobs:
         run: |
           mv ${{ env.filename }}-${{ matrix.job.arch }}.deb flatpak/rustdesk.deb
 
+      - name: Whitelabel flatpak manifest
+        if: env.appname != 'rustdesk'
+        shell: bash
+        run: |
+          sed -i "s|\"rename-desktop-file\": \"rustdesk.desktop\"|\"rename-desktop-file\": \"${{ env.appname }}.desktop\"|" flatpak/rustdesk.json
+          sed -i "s|\"rename-icon\": \"rustdesk\"|\"rename-icon\": \"${{ env.appname }}\"|" flatpak/rustdesk.json
+          sed -i "s|/app/share/rustdesk/rustdesk|/app/share/${{ env.appname }}/${{ env.appname }}|" flatpak/rustdesk.json
+
       - uses: rustdesk-org/run-on-arch-action@amd64-support
         name: Build rustdesk flatpak package for ${{ matrix.job.arch }}
         continue-on-error: true
